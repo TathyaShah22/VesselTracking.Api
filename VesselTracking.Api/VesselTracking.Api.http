@@ -1,0 +1,46 @@
+@VesselTracking.Api_HostAddress = https://localhost:7292
+
+
+GET {{VesselTracking.Api_HostAddress}}/api/vessels
+
+###
+
+POST {{VesselTracking.Api_HostAddress}}/api/vessels
+Content-Type: application/json
+
+{
+       "id": 1,
+    "name": "Ocean Voyager",
+    "type": "Cargo",
+    "originCountry": "Norway",
+    "imoNumber": "IMO1234567",
+    "builtYear": 2010,
+    "deadWeight": 52000
+        
+}
+
+###
+
+@id=1
+DELETE {{VesselTracking.Api_HostAddress}}/api/vessels/{{id}}
+
+###
+
+GET {{VesselTracking.Api_HostAddress}}/api/vessels/{{id}}
+
+###
+
+PUT {{VesselTracking.Api_HostAddress}}/api/vessels/{{id}}
+Content-Type: application/json
+
+{
+        "Id": 1,
+    "Name": "Ocean Voyager",
+    "Type": "Container",
+    "OriginCountry": "UAE",
+    "ImoNumber": "IMO1234567",
+    "BuiltYear": 2010,
+    "DeadWeight": 52000
+}
+
+###
