@@ -7,7 +7,7 @@ namespace VesselTracking.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VesselsController : ControllerBase
+    public class  VesselsController : ControllerBase
     {
 
         private static List<Vessel> vessels = new List<Vessel>
