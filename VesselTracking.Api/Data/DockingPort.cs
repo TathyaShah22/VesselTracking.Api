@@ -13,6 +13,6 @@
         public bool IsAvailable { get; set; } // For docking availability
 
         //table sql connection to access related vessels becaus eit is a one to many as one port can have many vessesl docked
-        public IList<Vessel> Vessels { get; set; }
+        public virtual IList<Vessel> Vessels { get; set; }
     }
 }
