@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using VesselTracking.Api.Models;
+using VesselTracking.Api.Data;
 
 namespace VesselTracking.Api.Data;
 
@@ -19,6 +20,8 @@ public partial class VesselTrackingDbContext : DbContext
     public virtual DbSet<Port> Ports { get; set; }
 
     public virtual DbSet<Vessel> Vessels { get; set; }
+
+public DbSet<VesselTracking.Api.Data.DockingPort> DockingPort { get; set; } = default!;
 
 
 }
