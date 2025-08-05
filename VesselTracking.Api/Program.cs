@@ -1,5 +1,9 @@
-using VesselTracking.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using VesselTracking.Api.Configurations;
+using VesselTracking.Api.Contracts;
+using VesselTracking.Api.Data;
+using VesselTracking.Api.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +15,24 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll",
+        b => b.AllowAnyHeader()
+            .AllowAnyOrigin()
+            .AllowAnyMethod());
+});
+builder.Services.AddControllers();
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
+builder.Services.AddScoped(typeof(iGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<iPortsRepository, PortsRepository>();
+
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 var app = builder.Build();
 
@@ -19,9 +40,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

@@ -1,7 +1,12 @@
-﻿namespace VesselTracking.Api.Data
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VesselTracking.Api.Data
 {
-    public class DockingPort
+    [Table("Ports")]
+    public class Port
     {
+        [Key]
         public int DockingPortId { get; set; }
 
         public string Name { get; set; }
@@ -13,6 +18,6 @@
         public bool IsAvailable { get; set; } // For docking availability
 
         //table sql connection to access related vessels becaus eit is a one to many as one port can have many vessesl docked
-        public virtual IList<Vessel> Vessels { get; set; }
+        public ICollection<Vessel> Vessels { get; set; }
     }
 }

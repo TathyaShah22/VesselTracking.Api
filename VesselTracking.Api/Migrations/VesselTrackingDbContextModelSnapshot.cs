@@ -16,12 +16,12 @@ namespace VesselTracking.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("VesselTracking.Api.Data.DockingPort", b =>
+            modelBuilder.Entity("VesselTracking.Api.Data.Port", b =>
                 {
                     b.Property<int>("DockingPortId")
                         .ValueGeneratedOnAdd()
@@ -46,6 +46,24 @@ namespace VesselTracking.Api.Migrations
                     b.HasKey("DockingPortId");
 
                     b.ToTable("Ports");
+
+                    b.HasData(
+                        new
+                        {
+                            DockingPortId = 1,
+                            Country = "UAE",
+                            IsAvailable = true,
+                            Name = "Main Harbor",
+                            capacityDeadweight = 100000
+                        },
+                        new
+                        {
+                            DockingPortId = 2,
+                            Country = "UAE",
+                            IsAvailable = false,
+                            Name = "Secondary Port",
+                            capacityDeadweight = 50000
+                        });
                 });
 
             modelBuilder.Entity("VesselTracking.Api.Data.Vessel", b =>
@@ -62,7 +80,7 @@ namespace VesselTracking.Api.Migrations
                     b.Property<int>("DeadWeight")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Docking_portDockingPortId")
+                    b.Property<int>("DockingPortId")
                         .HasColumnType("int");
 
                     b.Property<string>("ImoNumber")
@@ -82,21 +100,47 @@ namespace VesselTracking.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Docking_portDockingPortId");
+                    b.HasIndex("DockingPortId");
 
                     b.ToTable("Vessels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BuiltYear = 2015,
+                            DeadWeight = 74000,
+                            DockingPortId = 1,
+                            ImoNumber = "IMO7654321",
+                            Name = "Marine Explorer",
+                            OriginCountry = "India",
+                            Type = "LNG"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BuiltYear = 2010,
+                            DeadWeight = 60000,
+                            DockingPortId = 2,
+                            ImoNumber = "IMO1234567",
+                            Name = "Ocean Voyager",
+                            OriginCountry = "USA",
+                            Type = "Cargo"
+                        });
                 });
 
             modelBuilder.Entity("VesselTracking.Api.Data.Vessel", b =>
                 {
-                    b.HasOne("VesselTracking.Api.Data.DockingPort", "Docking_port")
+                    b.HasOne("VesselTracking.Api.Data.Port", "DockingPort")
                         .WithMany("Vessels")
-                        .HasForeignKey("Docking_portDockingPortId");
+                        .HasForeignKey("DockingPortId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Docking_port");
+                    b.Navigation("DockingPort");
                 });
 
-            modelBuilder.Entity("VesselTracking.Api.Data.DockingPort", b =>
+            modelBuilder.Entity("VesselTracking.Api.Data.Port", b =>
                 {
                     b.Navigation("Vessels");
                 });

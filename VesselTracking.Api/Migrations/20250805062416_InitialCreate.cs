@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace VesselTracking.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,22 +40,41 @@ namespace VesselTracking.Api.Migrations
                     ImoNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BuiltYear = table.Column<int>(type: "int", nullable: false),
                     DeadWeight = table.Column<int>(type: "int", nullable: false),
-                    Docking_portDockingPortId = table.Column<int>(type: "int", nullable: true)
+                    DockingPortId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vessels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vessels_Ports_Docking_portDockingPortId",
-                        column: x => x.Docking_portDockingPortId,
+                        name: "FK_Vessels_Ports_DockingPortId",
+                        column: x => x.DockingPortId,
                         principalTable: "Ports",
-                        principalColumn: "DockingPortId");
+                        principalColumn: "DockingPortId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Ports",
+                columns: new[] { "DockingPortId", "Country", "IsAvailable", "Name", "capacityDeadweight" },
+                values: new object[,]
+                {
+                    { 1, "UAE", true, "Main Harbor", 100000 },
+                    { 2, "UAE", false, "Secondary Port", 50000 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Vessels",
+                columns: new[] { "Id", "BuiltYear", "DeadWeight", "DockingPortId", "ImoNumber", "Name", "OriginCountry", "Type" },
+                values: new object[,]
+                {
+                    { 1, 2015, 74000, 1, "IMO7654321", "Marine Explorer", "India", "LNG" },
+                    { 2, 2010, 60000, 2, "IMO1234567", "Ocean Voyager", "USA", "Cargo" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vessels_Docking_portDockingPortId",
+                name: "IX_Vessels_DockingPortId",
                 table: "Vessels",
-                column: "Docking_portDockingPortId");
+                column: "DockingPortId");
         }
 
         /// <inheritdoc />

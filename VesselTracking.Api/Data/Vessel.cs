@@ -1,10 +1,12 @@
-﻿namespace VesselTracking.Api.Data
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VesselTracking.Api.Data
 {
     public class Vessel
     {
-        public int Id {  get; set; }
+        public int Id { get; set; }
 
-        public string? Name { get; set; } //nullable string
+        public string? Name { get; set; } // Nullable string
 
         public string Type { get; set; }
 
@@ -16,6 +18,9 @@
 
         public int DeadWeight { get; set; }
 
-        public DockingPort? Docking_port {  get; set; }
+        public int DockingPortId { get; set; }  // Foreign key property
+
+        [ForeignKey(nameof(DockingPortId))]
+        public Port? DockingPort { get; set; }  // Navigation property (PascalCase)
     }
 }
