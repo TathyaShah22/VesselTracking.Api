@@ -4,7 +4,7 @@ using VesselTracking.Api.Data;
 
 namespace VesselTracking.Api.Repository
 {
-    public class GenericRepository<T> : iGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly VesselTrackingDbContext _context;
 

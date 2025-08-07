@@ -11,9 +11,11 @@ namespace VesselTracking.Api.Configurations
         {
             CreateMap<Port, CreatePortDto>().ReverseMap(); 
             CreateMap<Port, GetPortDto>().ReverseMap();
-            CreateMap<Port, PortDto>().ReverseMap();    
-            CreateMap<Vessel, VesselDto>().ReverseMap();
+            CreateMap<Port, PortDto>().ReverseMap();
             CreateMap<Port, UpdatedPortDto>().ReverseMap();
+
+            CreateMap<Vessel, VesselDto>().ReverseMap();
+            CreateMap<Vessel, CreateVesselDto>().ReverseMap();
         }
     }
 }

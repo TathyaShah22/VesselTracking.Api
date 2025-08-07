@@ -28,8 +28,9 @@ builder.Services.AddCors(options => {
 builder.Services.AddControllers();
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
-builder.Services.AddScoped(typeof(iGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<iPortsRepository, PortsRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IPortsRepository, PortsRepository>();
+builder.Services.AddScoped<IVesselsRepository, VesselsRepository>();
 
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));

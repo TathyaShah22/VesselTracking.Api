@@ -17,9 +17,9 @@ namespace VesselTracking.Api.Controllers
     {
         //private readonly VesselTrackingDbContext _context;
         private readonly IMapper _mapper;
-        private readonly iPortsRepository _portsRepository;
+        private readonly IPortsRepository _portsRepository;
 
-        public PortsController(IMapper mapper, iPortsRepository portsRepository)
+        public PortsController(IMapper mapper, IPortsRepository portsRepository)
         {
             this._portsRepository = portsRepository;
             this._mapper = mapper;

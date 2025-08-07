@@ -1,116 +1,120 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VesselTracking.Api.Contracts;
 using VesselTracking.Api.Data;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using VesselTracking.Api.Models.Vessel;
 
 namespace VesselTracking.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class  VesselsController : ControllerBase
+    public class VesselsController : ControllerBase
     {
+        private readonly IVesselsRepository _vesselsRepository;
+        private readonly IMapper _mapper;
 
-        private static List<Vessel> vessels = new List<Vessel>
-{
-    new Vessel
-    {
-        Id = 1,
-        Name = "Ocean Voyager",
-        Type = "Container",
-        OriginCountry = "UAE",
-        ImoNumber = "IMO1234567",
-        BuiltYear = 2010,
-        DeadWeight = 52000,
-        },
-    new Vessel
-    {
-        Id = 2,
-        Name = "Marine Explorer",
-        Type = "LNG",
-        OriginCountry = "India",
-        ImoNumber = "IMO7654321",
-        BuiltYear = 2015,
-        DeadWeight = 74000,
-    },
-    new Vessel
-    {
-        Id = 3,
-        Name = "Blue Horizon",
-        Type = "Passenger",
-        OriginCountry = "USA",
-        ImoNumber = "IMO1122334",
-        BuiltYear = 2005,
-        DeadWeight = 30000,
-    }
-};
+        public VesselsController( IVesselsRepository vesselsRepository, IMapper mapper)
+        {
+            this._vesselsRepository = vesselsRepository;
+            this._mapper = mapper;
+        }
 
-        // GET: api/<VesselsController>
+        // GET: api/Vessels
         [HttpGet]
-        public ActionResult<IEnumerable<Vessel>> Get()
+        public async Task<ActionResult<IEnumerable<VesselDto>>> GetVessels()
         {
-            return Ok(vessels);
+            var vessels =  await _vesselsRepository.GetAllAsync();
+            return Ok(_mapper.Map<List<VesselDto>>(vessels));   
         }
 
-        // GET api/<VesselsController>/5
+        // GET: api/Vessels/5
         [HttpGet("{id}")]
-        public ActionResult<Vessel> Get(int id)
+        public async Task<ActionResult<VesselDto>> GetVessel(int id)
         {
-            var vessel = vessels.FirstOrDefault(v=>v.Id == id);
-            if(vessel == null)
-            {
-                return NotFound();
-            }
+            var vessel = await _vesselsRepository.GetAsync(id);
 
-            return Ok(vessel);
-        }
-
-        // POST api/<VesselsController>
-        [HttpPost]
-        public ActionResult<Vessel> Post([FromBody] Vessel newVessel)
-        {
-            if(vessels.Any(v => v.Id == newVessel.Id))
-            {
-                return BadRequest("Vessel with this Id already exists");
-            }
-
-            vessels.Add(newVessel);
-            return CreatedAtAction(nameof(Get), new {id = newVessel.Id}, newVessel);
-        }
-
-        // PUT api/<VesselsController>/5
-        [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Vessel updatedVessel)
-        {
-            var existingVessel = vessels.FirstOrDefault(v => v.Id == id);
-            if (existingVessel == null)
-            {
-                return NotFound();
-            }
-
-            // Update fields
-            existingVessel.Name = updatedVessel.Name;
-            existingVessel.Type = updatedVessel.Type;
-            existingVessel.OriginCountry = updatedVessel.OriginCountry;
-            existingVessel.ImoNumber = updatedVessel.ImoNumber;
-            existingVessel.BuiltYear = updatedVessel.BuiltYear;
-            existingVessel.DeadWeight = updatedVessel.DeadWeight;
-
-            return NoContent(); // 204 No Content.
-        }
-
-        // DELETE api/<VesselsController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            var vessel = vessels.FirstOrDefault(v => v.Id == id);
             if (vessel == null)
             {
-                return NotFound(new { message = "Vessel not found" });  //error 404              
+                return NotFound();
             }
 
-            vessels.Remove(vessel);
-            return NoContent(); 
+            return Ok(_mapper.Map<List<VesselDto>>(vessel));
+        }
 
+        // PUT: api/Vessels/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutVessel(int id, VesselDto vesselDto)
+        {
+            if (id != vesselDto.Id)
+            {
+                return BadRequest();
+            }
+
+            
+
+            var vessel = await _vesselsRepository.GetAsync(id);
+            if (vessel == null)
+            {
+                return NotFound(); 
+            }
+
+            _mapper.Map(vesselDto, vessel);
+
+            try
+            {
+                await _vesselsRepository.UpdateAsync(vessel);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await VesselExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/Vessels
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Vessel>> PostVessel(CreateVesselDto vesselDto)
+        {
+            var vessel = _mapper.Map<Vessel>(vesselDto);
+
+            await _vesselsRepository.AddAsync(vessel);
+            return CreatedAtAction("GetVessel", new { id = vessel.Id }, vessel);
+        }
+
+        // DELETE: api/Vessels/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVessel(int id)
+        {
+            var vessel = await _vesselsRepository.GetAsync(id);
+            if (vessel == null)
+            {
+                return NotFound();
+            }
+
+            await _vesselsRepository.DeleteAsync(id);
+
+            return NoContent();
+        }
+
+        private async Task<bool> VesselExists(int id)
+        {
+            return await _vesselsRepository.Exists(id);
         }
     }
 }

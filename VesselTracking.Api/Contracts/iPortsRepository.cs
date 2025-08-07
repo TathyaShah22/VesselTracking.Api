@@ -2,7 +2,7 @@
 
 namespace VesselTracking.Api.Contracts
 {
-    public interface iPortsRepository : iGenericRepository<Port>
+    public interface IPortsRepository : IGenericRepository<Port>
     {
         Task<Port> GetDetails(int id);
     }
